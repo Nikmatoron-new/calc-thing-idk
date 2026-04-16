@@ -1,0 +1,19 @@
+{
+  "name": "calc-thing-idk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nikmatoron-new/calc-thing-idk.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nikmatoron-new/calc-thing-idk/issues"
+  },
+  "homepage": "https://github.com/Nikmatoron-new/calc-thing-idk#readme"
+}
