@@ -1,34 +1,418 @@
-<div id="fakultet">
-    <form>
-        <input name="tall" placeholder="Tall" type="number">
-        <button>Regn ut fakultet</button>
-    </form>
-    <p>
-        Resultatet er: <span class="resultat"></span>
-    </p>
-</div>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Kalkulator</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 2rem 1rem 4rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #10b981, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #1e293b;
+            border-radius: 1rem;
+            padding: 1.75rem;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Accent border on top of each card */
+        #fakultet  { border-top: 3px solid #6366f1; }
+        #fizzbuzz  { border-top: 3px solid #10b981; }
+        #fibonacci { border-top: 3px solid #f59e0b; }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        #fakultet  .card-icon { background: #312e81; }
+        #fizzbuzz  .card-icon { background: #064e3b; }
+        #fibonacci .card-icon { background: #78350f; }
+
+        .card h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        #fakultet  h2 { color: #a5b4fc; }
+        #fizzbuzz  h2 { color: #6ee7b7; }
+        #fibonacci h2 { color: #fcd34d; }
+
+        .explanation {
+            background: #0f172a;
+            border-radius: 0.5rem;
+            padding: 0.875rem 1rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+            line-height: 1.6;
+            border-left: 3px solid #334155;
+        }
+
+        .explanation strong {
+            color: #cbd5e1;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .example-tag {
+            display: inline-block;
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.25rem;
+            padding: 0.1rem 0.4rem;
+            font-size: 0.8rem;
+            color: #e2e8f0;
+            margin-top: 0.25rem;
+        }
+
+        form {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            color: #e2e8f0;
+            padding: 0.625rem 0.875rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"]:focus { border-color: #6366f1; }
+        #fizzbuzz  input:focus     { border-color: #10b981; }
+        #fibonacci input:focus     { border-color: #f59e0b; }
+
+        button {
+            padding: 0.625rem 1.125rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        button:hover  { opacity: 0.85; }
+        button:active { transform: scale(0.97); }
+
+        #fakultet  button { background: #6366f1; color: #fff; }
+        #fizzbuzz  button { background: #10b981; color: #fff; }
+        #fibonacci button { background: #f59e0b; color: #0f172a; }
+
+        .result-box {
+            background: #0f172a;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-box .label { color: #64748b; }
+
+        .resultat {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        #fakultet  .resultat { color: #a5b4fc; }
+        #fizzbuzz  .resultat { color: #6ee7b7; }
+        #fibonacci .resultat { color: #fcd34d; }
+        /* ===== 1–100 TABLE ===== */
+        .tabell-seksjon {
+            max-width: 900px;
+            margin: 3rem auto 0;
+            padding: 0 1rem;
+        }
+
+        .tabell-seksjon h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .tabell-wrapper {
+            background: #1e293b;
+            border-radius: 1rem;
+            border: 1px solid #334155;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        thead th {
+            background: #0f172a;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            position: sticky;
+            top: 0;
+        }
+
+        tbody tr:nth-child(even) { background: #172032; }
+        tbody tr:hover           { background: #243044; }
+
+        td {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #1e293b;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        td:first-child { color: #64748b; width: 3.5rem; }
+
+        .col-fakultet  { color: #a5b4fc; }
+        .col-fibonacci { color: #fcd34d; }
+
+        /* FizzBuzz cell colours */
+        .fb-fizz     { color: #6ee7b7; font-weight: 600; }
+        .fb-buzz     { color: #93c5fd; font-weight: 600; }
+        .fb-fizzbuzz { color: #f9a8d4; font-weight: 700; }
+        .fb-plain    { color: #cbd5e1; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Web Kalkulator</h1>
+    <p>Tre matematiske funksjoner — Fakultet, FizzBuzz og Fibonacci</p>
+</header>
+
+<main>
+
+    <!-- ===== OPPGAVE 1: FAKULTET =====
+         Fakultet (n!) er produktet av alle positive heltall opp til og med n.
+         Formel: n! = n × (n-1) × (n-2) × ... × 2 × 1
+         Eksempel: 5! = 5 × 4 × 3 × 2 × 1 = 120
+         Spesialtilfeller: 0! = 1 (matematisk konvensjon), negative tall = 1
+    -->
+    <section id="fakultet" class="card">
+        <div class="card-header">
+            <div class="card-icon">∑</div>
+            <h2>Fakultet (n!)</h2>
+        </div>
+        <div class="explanation">
+            <strong>Hvordan det fungerer:</strong>
+            Ganger alle heltall fra 1 opp til n.
+            <span class="example-tag">5! = 5×4×3×2×1 = 120</span>
+        </div>
+        <form>
+            <input name="tall" placeholder="Skriv inn et tall" type="number" min="0">
+            <button type="submit">Regn ut</button>
+        </form>
+        <div class="result-box">
+            <span class="label">Resultat:</span>
+            <span class="resultat"></span>
+        </div>
+    </section>
+
+    <!-- ===== OPPGAVE 2: FIZZBUZZ =====
+         FizzBuzz returnerer:
+           - "Fizz"     hvis tallet er delelig med 3
+           - "Buzz"     hvis tallet er delelig med 5
+           - "FizzBuzz" hvis det er delelig med både 3 og 5 (dvs. 15)
+           - selve tallet som streng ellers
+         Viktig: sjekk 15 (% 15) FØR du sjekker 3 og 5, ellers får du feil svar.
+    -->
+    <section id="fizzbuzz" class="card">
+        <div class="card-header">
+            <div class="card-icon">🔀</div>
+            <h2>FizzBuzz</h2>
+        </div>
+        <div class="explanation">
+            <strong>Hvordan det fungerer:</strong>
+            Delelig med 3 → Fizz · med 5 → Buzz · med begge → FizzBuzz
+            <span class="example-tag">15 → "FizzBuzz"</span>
+        </div>
+        <form>
+            <input name="tall" placeholder="Skriv inn et tall" type="number">
+            <button type="submit">Sjekk</button>
+        </form>
+        <div class="result-box">
+            <span class="label">Resultat:</span>
+            <span class="resultat"></span>
+        </div>
+    </section>
+
+    <!-- ===== OPPGAVE 3: FIBONACCI =====
+         Fibonacci-sekvensen starter med 1, 1, og hvert neste tall er summen
+         av de to foregående: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...
+         Rekursiv formel: fibonacci(n) = fibonacci(n-1) + fibonacci(n-2)
+         Vi bruker en iterativ løkke (ikke rekursjon) for bedre ytelse —
+         rekursiv Fibonacci er O(2^n), iterativ er O(n).
+    -->
+    <section id="fibonacci" class="card">
+        <div class="card-header">
+            <div class="card-icon">🌀</div>
+            <h2>Fibonacci</h2>
+        </div>
+        <div class="explanation">
+            <strong>Hvordan det fungerer:</strong>
+            Hvert tall = summen av de to foregående.
+            <span class="example-tag">1, 1, 2, 3, 5, 8, 13 ...</span>
+        </div>
+        <form>
+            <input name="tall" placeholder="Posisjon (n)" type="number" min="1">
+            <button type="submit">Finn</button>
+        </form>
+        <div class="result-box">
+            <span class="label">Resultat:</span>
+            <span class="resultat"></span>
+        </div>
+    </section>
+
+</main>
+
+<!-- ===== 1–100 REFERANSELISTE =====
+     Genereres dynamisk av JavaScript under.
+     Viser utregningen for alle tre funksjoner for tallene 1–100.
+-->
+<section class="tabell-seksjon">
+    <h2>Oversikt — tall 1 til 100</h2>
+    <div class="tabell-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>n</th>
+                    <th>Fakultet (n!)</th>
+                    <th>FizzBuzz</th>
+                    <th>Fibonacci</th>
+                </tr>
+            </thead>
+            <tbody id="tabell-body"></tbody>
+        </table>
+    </div>
+</section>
 
 <script type="module">
-import {fakultet} from './fakultet.js'
+    import { fakultet  } from './fakultet.js';
+    import { fizzbuzz  } from './fizzbuzz.js';
+    import { fibonacci } from './fibonacci.js';
 
-function regnUt(evt) {
-    // For å forhindre at nettleseren sender skjemaet:
-    evt.preventDefault()
+    // Generell hjelpefunksjon som kobler et skjema til en beregningsfunksjon.
+    // Den finner input og resultat-span innenfor den gitte seksjonen.
+    function koblSkjema(seksjonId, beregnFn) {
+        const seksjon = document.querySelector(`#${seksjonId}`);
+        const input   = seksjon.querySelector('input');
+        const output  = seksjon.querySelector('.resultat');
 
-    // Vi bruker querySelector for å finne elementene vi trenger:
-    // "#fakultet input" betyr "input-felt i elementet med id 'fakultet'
-    // "#fakultet .resultat" betyr "element med class 'resultat' i
-    //    elementet med id 'fakultet'
-    const input = document.querySelector('#fakultet input')
-    const output = document.querySelector('#fakultet .resultat')
+        seksjon.querySelector('button').addEventListener('click', evt => {
+            // Forhindrer at nettleseren laster siden på nytt (standard skjema-oppførsel)
+            evt.preventDefault();
 
-    // parseInt konverterer en streng til et heltall
-    const tall = parseInt(input.value)
+            const tall = parseInt(input.value);
+            if (isNaN(tall)) {
+                output.textContent = '—';
+                return;
+            }
+            output.textContent = beregnFn(tall);
+        });
+    }
 
-    output.textContent = fakultet(tall)
-}
+    koblSkjema('fakultet',  fakultet);
+    koblSkjema('fizzbuzz',  fizzbuzz);
+    koblSkjema('fibonacci', fibonacci);
 
-// Vi legger til en "event listener" som kjører regnUt-funksjonen når
-// vi trykker på en knapp (button) i elementet med id 'fakultet'
-document.querySelector('#fakultet button')
-    .addEventListener('click', e => regnUt(e))
+    // Bygg 1–100-tabellen
+    // Fakultet vokser ekstremt raskt – over n≈18 mister JavaScript Number presisjon,
+    // så vi bytter til eksponentiell notasjon for store verdier.
+    function viseFakultet(n) {
+        const v = fakultet(n);
+        return v >= 1e15 ? v.toExponential(2) : v.toLocaleString('no');
+    }
+
+    const tbody = document.getElementById('tabell-body');
+    const fragment = document.createDocumentFragment();
+
+    for (let n = 1; n <= 100; n++) {
+        const fzVal = fizzbuzz(n);
+        let fzClass = 'fb-plain';
+        if      (fzVal === 'FizzBuzz') fzClass = 'fb-fizzbuzz';
+        else if (fzVal === 'Fizz')     fzClass = 'fb-fizz';
+        else if (fzVal === 'Buzz')     fzClass = 'fb-buzz';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+            `<td>${n}</td>` +
+            `<td class="col-fakultet">${viseFakultet(n)}</td>` +
+            `<td class="${fzClass}">${fzVal}</td>` +
+            `<td class="col-fibonacci">${fibonacci(n)}</td>`;
+        fragment.appendChild(tr);
+    }
+
+    tbody.appendChild(fragment);
+</script>
+
+</body>
+</html>

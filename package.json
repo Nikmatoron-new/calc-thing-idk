@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "start": "node server.js",
     "test": "node --test"
-},
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Nikmatoron-new/calc-thing-idk.git"
@@ -15,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/Nikmatoron-new/calc-thing-idk/issues"
   },
-  "homepage": "https://github.com/Nikmatoron-new/calc-thing-idk#readme"
+  "homepage": "https://github.com/Nikmatoron-new/calc-thing-idk#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.6.2",
+    "nodemon": "^3.1.14",
+    "pg": "^8.21.0"
+  }
 }
